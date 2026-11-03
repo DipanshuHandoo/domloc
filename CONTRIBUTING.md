@@ -22,17 +22,17 @@ Chromium once: `npx playwright install chromium`.
 
 ## Useful commands
 
-| Command | Purpose |
-| --- | --- |
-| `npm test` | Run tests |
-| `npm run test:coverage` | Tests with coverage thresholds |
-| `npm run format` | Apply formatting |
-| `npm run lint` | Lint (warnings fail) |
-| `npm run typecheck` | Type check |
-| `npm run build` | Build `dist/` |
-| `npm run test:package` | Pack, install in a temp project, test ESM/CJS/types/examples |
-| `npm run test:browser` | Run the built browser bundle and `getBrowserScript()` in Chromium |
-| `npm run verify` | Everything CI runs |
+| Command                 | Purpose                                                           |
+| ----------------------- | ----------------------------------------------------------------- |
+| `npm test`              | Run tests                                                         |
+| `npm run test:coverage` | Tests with coverage thresholds                                    |
+| `npm run format`        | Apply formatting                                                  |
+| `npm run lint`          | Lint (warnings fail)                                              |
+| `npm run typecheck`     | Type check                                                        |
+| `npm run build`         | Build `dist/`                                                     |
+| `npm run test:package`  | Pack, install in a temp project, test ESM/CJS/types/examples      |
+| `npm run test:browser`  | Run the built browser bundle and `getBrowserScript()` in Chromium |
+| `npm run verify`        | Everything CI runs                                                |
 
 `src/browser.ts` is the entry for the browser bundle. `scripts/build.mjs` builds it first and
 embeds the minified output into the ESM/CJS builds as the `getBrowserScript()` return value.

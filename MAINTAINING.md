@@ -41,7 +41,7 @@ Prereleases: `npx changeset pre enter next` ... `npx changeset pre exit`.
 
 1. **npm trusted publisher** — on npmjs.com open the package → Settings → Trusted publisher,
    choose GitHub Actions and set owner/repo, workflow `release.yml`, environment `npm`.
-   *Unverified:* whether npm lets you register a trusted publisher before the package's first
+   _Unverified:_ whether npm lets you register a trusted publisher before the package's first
    version exists. If not, publish the first version once with a short-lived granular token
    and then switch to trusted publishing and revoke the token. Check npm's current docs.
 2. **`npm` environment with reviewers** — Settings → Environments → New environment `npm` →

@@ -109,13 +109,13 @@ All options are described in [docs/configuration.md](docs/configuration.md).
 The selector is built from the element up towards `body`. At each step the first matching rule
 wins:
 
-| # | Rule | Step | Stops the walk |
-| --- | --- | --- | --- |
-| 1 | An `attributes` entry has a value unique in the document (opt-in) | `[data-testid="save"]` | yes |
-| 2 | The `id` is unique in the document and does not look generated | `#main` | yes |
-| 3 | The **first** class is not deny-listed and no same-tag sibling has it | `div.card` | no |
-| 4 | The tag is unique among its siblings | `nav` | no |
-| 5 | Otherwise | `li:nth-of-type(3)` | no |
+| #   | Rule                                                                  | Step                   | Stops the walk |
+| --- | --------------------------------------------------------------------- | ---------------------- | -------------- |
+| 1   | An `attributes` entry has a value unique in the document (opt-in)     | `[data-testid="save"]` | yes            |
+| 2   | The `id` is unique in the document and does not look generated        | `#main`                | yes            |
+| 3   | The **first** class is not deny-listed and no same-tag sibling has it | `div.card`             | no             |
+| 4   | The tag is unique among its siblings                                  | `nav`                  | no             |
+| 5   | Otherwise                                                             | `li:nth-of-type(3)`    | no             |
 
 `html >` is omitted, so unanchored selectors start at `body`. Ids, classes and attribute values
 are CSS-escaped. The XPath is always absolute and positional (`/html/body[1]/main[1]/a[2]`).
@@ -133,12 +133,12 @@ const ctx = createSelectorContext({ adapter: { ...domAdapter, id: () => "" } });
 
 ## When to use something else
 
-| Library | Works on | Approach | Choose it when |
-| --- | --- | --- | --- |
-| **domloc** | Browser DOM, jsdom, Cheerio/domhandler, custom trees | Unique per step, no querying; one context per document | You need selectors for many elements, on the server or in the page, plus XPath |
-| [`@medv/finder`](https://github.com/antonmedv/finder) | Browser DOM | Searches for the shortest selector, checking candidates with `querySelectorAll` | You want the shortest possible selector for one element in a live page |
-| [`css-selector-generator`](https://github.com/fczbkk/css-selector-generator) | Browser DOM | Combines selector types, verified against the document | You need fine control over which selector types are combined |
-| [`@cypress/unique-selector`](https://github.com/cypress-io/unique-selector) | Browser DOM | Tries ID, class, attribute, tag and nth-child selectors in order | You test with Cypress and want its conventions |
+| Library                                                                      | Works on                                             | Approach                                                                        | Choose it when                                                                 |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **domloc**                                                                   | Browser DOM, jsdom, Cheerio/domhandler, custom trees | Unique per step, no querying; one context per document                          | You need selectors for many elements, on the server or in the page, plus XPath |
+| [`@medv/finder`](https://github.com/antonmedv/finder)                        | Browser DOM                                          | Searches for the shortest selector, checking candidates with `querySelectorAll` | You want the shortest possible selector for one element in a live page         |
+| [`css-selector-generator`](https://github.com/fczbkk/css-selector-generator) | Browser DOM                                          | Combines selector types, verified against the document                          | You need fine control over which selector types are combined                   |
+| [`@cypress/unique-selector`](https://github.com/cypress-io/unique-selector)  | Browser DOM                                          | Tries ID, class, attribute, tag and nth-child selectors in order                | You test with Cypress and want its conventions                                 |
 
 domloc's selectors are deliberately positional where nothing better exists. They are readable
 and stable for crawling and auditing the same HTML, but are usually longer than a shortest-path

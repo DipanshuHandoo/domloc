@@ -21,14 +21,17 @@ await page.addInitScript(getBrowserScript());
 await page.evaluate(getBrowserScript());
 await page.evaluateOnNewDocument(getBrowserScript());
 
-const rows = await page.evaluate((options) => {
-  const ctx = window.domloc.createSelectorContext(options);
-  return [...document.querySelectorAll("a")].map((a) => ({
-    href: a.href,
-    selector: ctx.cssSelectorOf(a),
-    xpath: ctx.xpathOf(a),
-  }));
-}, { attributes: ["data-testid"], classDenyList: ["^tmp-"] });
+const rows = await page.evaluate(
+  (options) => {
+    const ctx = window.domloc.createSelectorContext(options);
+    return [...document.querySelectorAll("a")].map((a) => ({
+      href: a.href,
+      selector: ctx.cssSelectorOf(a),
+      xpath: ctx.xpathOf(a),
+    }));
+  },
+  { attributes: ["data-testid"], classDenyList: ["^tmp-"] },
+);
 ```
 
 ### Passing options across the boundary

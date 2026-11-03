@@ -3,13 +3,13 @@
 Runnable examples that import the package through its public entry point. They are not
 published to npm.
 
-| File | Shows |
-| --- | --- |
-| `basic.mjs` | Minimal jsdom usage: one context, selector and XPath per link |
-| `full-tour.mjs` | Defaults, `attributes`, deny-lists, `presets.milo`, one-off helpers, errors, CommonJS |
-| `cheerio.mjs` | Server-side scraping with Cheerio, with each selector resolved back |
-| `playwright.mjs` | Injecting `getBrowserScript()` into a Chromium page and computing selectors in-page |
-| `custom-adapter.mjs` | A custom adapter over a JSON tree, and wrapping a built-in adapter |
+| File                 | Shows                                                                                 |
+| -------------------- | ------------------------------------------------------------------------------------- |
+| `basic.mjs`          | Minimal jsdom usage: one context, selector and XPath per link                         |
+| `full-tour.mjs`      | Defaults, `attributes`, deny-lists, `presets.milo`, one-off helpers, errors, CommonJS |
+| `cheerio.mjs`        | Server-side scraping with Cheerio, with each selector resolved back                   |
+| `playwright.mjs`     | Injecting `getBrowserScript()` into a Chromium page and computing selectors in-page   |
+| `custom-adapter.mjs` | A custom adapter over a JSON tree, and wrapping a built-in adapter                    |
 
 Each example asserts its own output, so a non-zero exit means broken behaviour.
 

@@ -23,11 +23,11 @@ because shared runners give noisy timings (set `DOMLOC_PERF=1` to force it).
 Selector plus XPath for every element of a 160,000-element page (20,000 repeated sections, one
 context), on Node 22 with a typical laptop CPU. These are indicative; measure your own pages.
 
-| Workload | Time |
-| --- | --- |
-| Cheerio, all 160k elements | ~0.3 s (~2 µs per element) |
-| jsdom, all 160k elements | ~0.75 s (DOM accessors dominate) |
-| Cheerio, one-off `cssSelectorOf` per link | ~15 ms **per call** |
+| Workload                                  | Time                             |
+| ----------------------------------------- | -------------------------------- |
+| Cheerio, all 160k elements                | ~0.3 s (~2 µs per element)       |
+| jsdom, all 160k elements                  | ~0.75 s (DOM accessors dominate) |
+| Cheerio, one-off `cssSelectorOf` per link | ~15 ms **per call**              |
 
 The one-off helpers are O(document) per call. Each call builds a new context, which scans every
 id in the document and regroups the target's siblings. On large pages that is thousands of times
