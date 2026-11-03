@@ -194,10 +194,18 @@ async function main() {
       JSON.stringify({ name: "consumer", private: true, type: "module" }),
     );
 
-    log("Installing tarball into an isolated consumer");
-    await runNpm(["install", "--no-audit", "--no-fund", "--ignore-scripts", tarball], {
-      cwd: consumer,
+    log("Installing tarball (and example-only dependencies) into an isolated consumer");
+    const devDependencies = pkg.devDependencies ?? {};
+    const exampleDependencies = (config.exampleDependencies ?? []).map((name) => {
+      if (!devDependencies[name]) {
+        throw new Error(`exampleDependencies: "${name}" must be listed in devDependencies`);
+      }
+      return `${name}@${devDependencies[name]}`;
     });
+    await runNpm(
+      ["install", "--no-audit", "--no-fund", "--ignore-scripts", tarball, ...exampleDependencies],
+      { cwd: consumer },
+    );
     const installed = path.join(consumer, "node_modules", ...pkg.name.split("/"));
 
     validateSourceMaps(installed);

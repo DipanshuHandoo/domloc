@@ -10,7 +10,7 @@ src/
   index.ts        # the only public surface; re-export deliberately
   types.ts        # shared public types
   errors.ts       # typed error contract
-  <feature>.ts    # one focused module per capability (retry.ts)
+  <feature>.ts    # one focused module per capability (context.ts)
 test/
   <feature>.test.ts   # mirrors src/
   helpers.ts
@@ -77,7 +77,7 @@ Infrastructure is passed into services as an argument; features never import it.
   `boilerplate.config.json` and an `exports` branch; `check-package` verifies ESM/CJS parity.
 - **Errors are contracts.** Throw typed errors with a `cause`. Never swallow failures or return a
   success-shaped default.
-- **Observability by hook.** Accept `onRetry`/`onEvent` style callbacks instead of importing a logger.
+- **Observability by hook.** Accept `onEvent`-style callbacks instead of importing a logger.
 - **Retries only where safe.** Bounded attempts and delay, idempotency considered, cancellation honoured.
 - **Scale.** For high-volume work prefer bounded concurrency, batching, streaming and cursor
   pagination; use worker threads only for CPU-bound work and a queue only for durable async work.
@@ -93,33 +93,42 @@ Infrastructure is passed into services as an argument; features never import it.
 - Exporting internals "temporarily".
 - Module-level mutable state shared across calls.
 
-## Worked example: growing `withRetry`
-
-Suppose the package gains an HTTP client that retries and records metrics. Flat modules still
-work until the I/O appears.
+## domloc layout
 
 ```text
 src/
-  index.ts
-  errors.ts
-  types.ts
-  config.ts                  # option defaults and validation
-  retry/
-    index.ts
-    retry.ts                 # withRetry, pure; takes shouldRetry and onRetry
-    backoff.ts               # delay and jitter calculation
-  services/
-    fetch-with-retry.ts      # composes retry + an injected transport
-  infrastructure/
-    http-transport.ts        # the only place that calls fetch
-  utils/
-    sleep.ts                 # abortable sleep, used by retry and services
+  index.ts              # public exports only, listed by name
+  types.ts              # Adapter, options and context types
+  errors.ts             # DomlocError, InvalidOptionError, isDomlocError
+  config.ts             # default deny-lists, presets, option validation (resolveOptions)
+  escape.ts             # cssEscape and CSS string serialisation
+  context.ts            # the memoised algorithm: anchors, steps, XPath; per-document caches
+  selector.ts           # createSelectorContext and one-off helpers; adapter resolution
+  browser-script.ts     # getBrowserScript(), returns the build-injected IIFE string
+  browser.ts            # IIFE entry that defines window.domloc (not part of the npm entry)
+  adapters/
+    dom.ts              # browser DOM and jsdom
+    domhandler.ts       # Cheerio, htmlparser2 and parse5
+test/
+  <module>.test.ts      # behaviour per module
+  regressions.test.ts   # one failing-first test per fixed bug
+  property.test.ts      # random documents: every selector/XPath resolves to its element
+  types/                # ESM + CJS consumer fixtures
 ```
 
-`retry/` stays pure and is tested with fake timers. `services/fetch-with-retry.ts` takes a
-`transport` argument, so its tests pass a fake and never touch the network.
-`infrastructure/http-transport.ts` is exercised by one integration test against a local server.
-`index.ts` exports `withRetry` and `fetchWithRetry` by name.
+Dependency direction: `index` → `selector` → `context` → `config`, `escape`, `types`, `errors`.
+Adapters depend only on `types` and `escape`. `context.ts` never imports an adapter; it receives
+one as an argument, which is what lets custom adapters and tests drive the same algorithm.
+
+Invariants:
+
+- `context.ts` must never query the document to verify a selector. Uniqueness comes from
+  construction: each step is unique among its siblings, and the walk ends at a document-unique
+  anchor or the root.
+- XPath and selector output for existing input is a compatibility contract. Change it only with
+  a failing regression test first and a changeset entry.
+- Everything reachable from `browser.ts` is bundled into the page script, so it must not import
+  Node-only modules.
 
 ## Review checklist
 

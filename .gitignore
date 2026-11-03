@@ -13,3 +13,6 @@ Thumbs.db
 !.vscode/extensions.json
 examples/**/reports/
 examples/**/.state/
+
+# Reference copy of the internal dom-selectors package (not part of this repo)
+Old Package/
