@@ -35,13 +35,13 @@ without a build, it throws `DomlocError` with code `ERR_BROWSER_SCRIPT_UNAVAILAB
 
 ## Constants
 
-| Export | Description |
-| --- | --- |
+| Export                    | Description                                                     |
+| ------------------------- | --------------------------------------------------------------- |
 | `DEFAULT_CLASS_DENY_LIST` | Frozen `RegExp[]` of generic state and generated class patterns |
-| `DEFAULT_ID_DENY_PATTERN` | `RegExp` of generated-looking ids |
-| `presets` | Frozen option bundles: `presets.milo` |
-| `domAdapter` | Built-in adapter for browser DOM and jsdom |
-| `domhandlerAdapter` | Built-in adapter for Cheerio / domhandler |
+| `DEFAULT_ID_DENY_PATTERN` | `RegExp` of generated-looking ids                               |
+| `presets`                 | Frozen option bundles: `presets.milo`                           |
+| `domAdapter`              | Built-in adapter for browser DOM and jsdom                      |
+| `domhandlerAdapter`       | Built-in adapter for Cheerio / domhandler                       |
 
 ## Errors
 

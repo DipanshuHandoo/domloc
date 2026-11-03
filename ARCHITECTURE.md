@@ -22,14 +22,14 @@ create empty placeholder files.
 
 ## When to split
 
-| Trigger | Action |
-| --- | --- |
-| A module passes roughly 300 lines or has two unrelated reasons to change | Split into focused modules |
-| The same code is used by two or more modules | Extract to `utils/` (not before) |
-| Code performs I/O (HTTP, filesystem, database, queue) and tests need to fake it | Move behind an adapter in `infrastructure/` |
-| Several features must be composed into one workflow | Add an orchestrating function in `services/` |
-| Code imports Node-only modules but the package ships a browser build | Put it in its own subpath entry |
-| A feature needs more than three files | Promote it to `src/<feature>/` |
+| Trigger                                                                         | Action                                       |
+| ------------------------------------------------------------------------------- | -------------------------------------------- |
+| A module passes roughly 300 lines or has two unrelated reasons to change        | Split into focused modules                   |
+| The same code is used by two or more modules                                    | Extract to `utils/` (not before)             |
+| Code performs I/O (HTTP, filesystem, database, queue) and tests need to fake it | Move behind an adapter in `infrastructure/`  |
+| Several features must be composed into one workflow                             | Add an orchestrating function in `services/` |
+| Code imports Node-only modules but the package ships a browser build            | Put it in its own subpath entry              |
+| A feature needs more than three files                                           | Promote it to `src/<feature>/`               |
 
 ## Layout once a package outgrows flat
 
@@ -52,14 +52,14 @@ src/
 test/                      # mirrors src/ one to one
 ```
 
-| Folder | Responsibility | May import | Must not import |
-| --- | --- | --- | --- |
-| `utils/` | Pure helpers with no domain knowledge | nothing internal | features, services, infrastructure |
-| `types.ts`, `errors.ts`, `config.ts` | Shared contracts | `utils/` | features, services, infrastructure |
-| `<feature>/` | Domain logic | `utils/`, shared contracts | services, infrastructure |
-| `infrastructure/` | Adapters to the outside world | `utils/`, shared contracts | features, services |
-| `services/` | Compose features and adapters into workflows | everything above | `index.ts` |
-| `index.ts` | Public API | `services/`, features, shared contracts | `infrastructure/` internals |
+| Folder                               | Responsibility                               | May import                              | Must not import                    |
+| ------------------------------------ | -------------------------------------------- | --------------------------------------- | ---------------------------------- |
+| `utils/`                             | Pure helpers with no domain knowledge        | nothing internal                        | features, services, infrastructure |
+| `types.ts`, `errors.ts`, `config.ts` | Shared contracts                             | `utils/`                                | features, services, infrastructure |
+| `<feature>/`                         | Domain logic                                 | `utils/`, shared contracts              | services, infrastructure           |
+| `infrastructure/`                    | Adapters to the outside world                | `utils/`, shared contracts              | features, services                 |
+| `services/`                          | Compose features and adapters into workflows | everything above                        | `index.ts`                         |
+| `index.ts`                           | Public API                                   | `services/`, features, shared contracts | `infrastructure/` internals        |
 
 Dependency direction: `index` to `services` to `features` to `utils`, `types`, `errors`.
 Infrastructure is passed into services as an argument; features never import it.

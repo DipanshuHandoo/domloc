@@ -2,10 +2,10 @@
 
 An adapter tells domloc how to read a tree. Two are built in and exported:
 
-| Name | Export | Works with |
-| --- | --- | --- |
-| `"dom"` (default) | `domAdapter` | Browser DOM, Playwright/Puppeteer page context, jsdom |
-| `"domhandler"` | `domhandlerAdapter` | Cheerio, htmlparser2 and parse5 trees built with domhandler |
+| Name              | Export              | Works with                                                  |
+| ----------------- | ------------------- | ----------------------------------------------------------- |
+| `"dom"` (default) | `domAdapter`        | Browser DOM, Playwright/Puppeteer page context, jsdom       |
+| `"domhandler"`    | `domhandlerAdapter` | Cheerio, htmlparser2 and parse5 trees built with domhandler |
 
 Both are frozen. Wrap them with object spread to change one behaviour.
 

@@ -4,12 +4,12 @@
 helpers `cssSelectorOf(node, options)` and `xpathOf(node, options)` accept the same options,
 and `xpathOf` also accepts `omitFirstIndex`.
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `adapter` | `"dom" \| "domhandler" \| Adapter` | `"dom"` | How to read the tree. `"dom"` covers browsers and jsdom; `"domhandler"` covers Cheerio, htmlparser2 and parse5. See [Adapters](adapters.md). |
-| `classDenyList` | `(RegExp \| string)[]` | `DEFAULT_CLASS_DENY_LIST` | A node's **first** class is never used if it matches any pattern. `[]` allows every class. |
-| `idDenyPattern` | `RegExp \| string` | `DEFAULT_ID_DENY_PATTERN` | Ids matching this pattern never anchor a selector. |
-| `attributes` | `string[]` | `[]` | Attribute names whose document-unique values anchor a selector, checked in order and before the id. |
+| Option          | Type                               | Default                   | Description                                                                                                                                  |
+| --------------- | ---------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `adapter`       | `"dom" \| "domhandler" \| Adapter` | `"dom"`                   | How to read the tree. `"dom"` covers browsers and jsdom; `"domhandler"` covers Cheerio, htmlparser2 and parse5. See [Adapters](adapters.md). |
+| `classDenyList` | `(RegExp \| string)[]`             | `DEFAULT_CLASS_DENY_LIST` | A node's **first** class is never used if it matches any pattern. `[]` allows every class.                                                   |
+| `idDenyPattern` | `RegExp \| string`                 | `DEFAULT_ID_DENY_PATTERN` | Ids matching this pattern never anchor a selector.                                                                                           |
+| `attributes`    | `string[]`                         | `[]`                      | Attribute names whose document-unique values anchor a selector, checked in order and before the id.                                          |
 
 `xpathOf(node, { omitFirstIndex: true })` drops every `[1]` predicate:
 `/html/body/main/div[2]/a` instead of `/html/body[1]/main[1]/div[2]/a[1]`.
@@ -65,8 +65,8 @@ import { presets } from "@dipanshuhandoo/domloc";
 createSelectorContext({ adapter: "domhandler", ...presets.milo });
 ```
 
-| Preset | For | Effect |
-| --- | --- | --- |
+| Preset         | For                                                  | Effect                                                                                                                                                                                                       |
+| -------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `presets.milo` | Adobe Milo / Franklin (Edge Delivery Services) sites | Deny-lists runtime block decoration such as `con-block`, `has-bg`, `dark`, `grid` and `xs-spacing`, and uses the original id pattern. Reproduces the output of the internal `dom-selectors` package exactly. |
 
 In a page, use `window.domloc.presets.milo`, because `RegExp` objects do not survive
