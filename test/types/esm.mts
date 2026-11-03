@@ -1,26 +1,60 @@
 // ESM consumer fixture: compiled against the installed tarball with module=nodenext.
 import {
-  AbortedError,
-  isPackageError,
-  type RetryOptions,
-  RetryExhaustedError,
-  withRetry,
-} from "npm-package-boilerplate";
+  type Adapter,
+  createSelectorContext,
+  cssEscape,
+  cssSelectorOf,
+  DEFAULT_CLASS_DENY_LIST,
+  DEFAULT_ID_DENY_PATTERN,
+  type DomElementLike,
+  domAdapter,
+  domhandlerAdapter,
+  type ErrorCode,
+  getBrowserScript,
+  InvalidOptionError,
+  isDomlocError,
+  presets,
+  type SelectorContext,
+  type SelectorContextOptions,
+  xpathOf,
+} from "@dipanshuhandoo/domloc";
 
-const options: RetryOptions = { retries: 1, minDelayMs: 1, jitter: false };
+declare const element: Element;
 
-const value: Promise<number> = withRetry(async (attempt) => attempt, options);
-const text: Promise<string> = withRetry(() => "sync", options);
+const ctx: SelectorContext = createSelectorContext({ adapter: "dom", attributes: ["data-testid"] });
+const css: string = ctx.cssSelectorOf(element);
+const xpath: string = ctx.xpathOf(element, { omitFirstIndex: true });
+const oneOff: string = cssSelectorOf(element, { ...presets.milo, adapter: "domhandler" });
+const oneOffXPath: string = xpathOf(element, { omitFirstIndex: true });
+const script: string = getBrowserScript();
+const escaped: string = cssEscape("a.b");
+const patterns: readonly RegExp[] = DEFAULT_CLASS_DENY_LIST;
+const idPattern: RegExp = DEFAULT_ID_DENY_PATTERN;
+const domNode: DomElementLike = element;
+
+interface MyNode {
+  name: string;
+  up: MyNode | null;
+  kids: MyNode[];
+}
+const custom: Adapter<MyNode> = {
+  isElement: (n: unknown): n is MyNode => typeof (n as MyNode)?.name === "string",
+  tagName: (n) => n.name,
+  parent: (n) => n.up,
+  children: (n) => n.kids,
+  id: () => "",
+  classes: () => [],
+  allElements: () => [],
+};
+const options: SelectorContextOptions<MyNode> = { adapter: custom, classDenyList: ["^x", /y/] };
+createSelectorContext(options);
+// @ts-expect-error unknown adapter names are rejected at compile time
+createSelectorContext({ adapter: "cheerio" });
 
 declare const error: unknown;
-if (error instanceof RetryExhaustedError) {
-  const attempts: number = error.attempts;
-  void attempts;
-}
-if (isPackageError(error)) {
-  const code: "ERR_INVALID_OPTION" | "ERR_RETRY_EXHAUSTED" | "ERR_ABORTED" = error.code;
+if (isDomlocError(error)) {
+  const code: ErrorCode = error.code;
   void code;
 }
-void AbortedError;
-void value;
-void text;
+void [css, xpath, oneOff, oneOffXPath, script, escaped, patterns, idPattern, domNode];
+void [domAdapter, domhandlerAdapter, InvalidOptionError];

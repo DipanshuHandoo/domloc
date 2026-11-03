@@ -1,22 +1,30 @@
 {
-  "name": "npm-package-boilerplate",
-  "version": "0.1.0",
-  "description": "Production-grade boilerplate for building, verifying and releasing npm packages.",
+  "name": "@dipanshuhandoo/domloc",
+  "version": "0.0.0",
+  "description": "Readable, unique CSS selectors and absolute XPaths for browser DOM, jsdom and Cheerio (domhandler) nodes. One algorithm, zero dependencies.",
   "keywords": [
-    "npm",
-    "boilerplate",
-    "template",
-    "retry"
+    "css-selector",
+    "unique-selector",
+    "selector-generator",
+    "xpath",
+    "cheerio",
+    "domhandler",
+    "jsdom",
+    "dom",
+    "playwright",
+    "puppeteer",
+    "scraping",
+    "crawler"
   ],
   "license": "MIT",
   "author": "Dipanshu Handoo",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DipanshuHandoo/npm-package-boilerplate.git"
+    "url": "git+https://github.com/DipanshuHandoo/domloc.git"
   },
-  "homepage": "https://github.com/DipanshuHandoo/npm-package-boilerplate#readme",
+  "homepage": "https://github.com/DipanshuHandoo/domloc#readme",
   "bugs": {
-    "url": "https://github.com/DipanshuHandoo/npm-package-boilerplate/issues"
+    "url": "https://github.com/DipanshuHandoo/domloc/issues"
   },
   "type": "module",
   "sideEffects": false,
@@ -51,8 +59,6 @@
     "provenance": true
   },
   "scripts": {
-    "init": "node scripts/init.mjs",
-    "test:template": "node --test scripts/variants/tests/*.test.mjs",
     "clean": "node scripts/clean.mjs",
     "build": "node scripts/build.mjs",
     "test": "node scripts/test.mjs",
@@ -68,15 +74,23 @@
     "release": "node scripts/release.mjs",
     "changeset": "changeset",
     "version": "changeset version && npm install --package-lock-only --ignore-scripts",
-    "prepublishOnly": "node scripts/release.mjs --prepublish-guard"
+    "prepublishOnly": "node scripts/release.mjs --prepublish-guard",
+    "test:browser": "node scripts/check-browser.mjs"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@biomejs/biome": "^2.5.15",
     "@changesets/cli": "^3.0.3",
+    "@types/jsdom": "^30.0.0",
     "@types/node": "^26.6.5",
+    "cheerio": "^1.2.0",
     "esbuild": "^0.28.2",
+    "fast-check": "^4.10.2",
+    "jsdom": "^30.1.3",
+    "playwright": "^1.64.1",
     "publint": "^0.3.25",
     "typescript": "^7.0.2"
-  }
+  },
+  "unpkg": "./dist/browser/index.min.js",
+  "jsdelivr": "./dist/browser/index.min.js"
 }

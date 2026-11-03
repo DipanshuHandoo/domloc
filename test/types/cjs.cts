@@ -1,13 +1,17 @@
 // CommonJS consumer fixture: compiled against the installed tarball with module=nodenext.
-import pkg = require("npm-package-boilerplate");
+import domloc = require("@dipanshuhandoo/domloc");
 
-const value: Promise<number> = pkg.withRetry(async (attempt) => attempt, { retries: 1 });
-const options: pkg.RetryOptions = { retries: 1 };
+declare const element: Element;
+
+const ctx: domloc.SelectorContext = domloc.createSelectorContext({ adapter: "domhandler" });
+const css: string = ctx.cssSelectorOf(element);
+const xpath: string = domloc.xpathOf(element, { omitFirstIndex: true });
+const options: domloc.SelectorContextOptions = { ...domloc.presets.milo, attributes: ["name"] };
+const script: string = domloc.getBrowserScript();
 
 declare const error: unknown;
-if (pkg.isPackageError(error)) {
-  const code: string = error.code;
+if (domloc.isDomlocError(error)) {
+  const code: domloc.ErrorCode = error.code;
   void code;
 }
-void value;
-void options;
+void [css, xpath, options, script];

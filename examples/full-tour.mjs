@@ -1,77 +1,66 @@
+// Tour of the public API: context reuse, options, presets, attributes, helpers and errors.
 import assert from "node:assert/strict";
+import { createRequire } from "node:module";
 import {
-  AbortedError,
+  createSelectorContext,
+  cssEscape,
+  cssSelectorOf,
+  DEFAULT_CLASS_DENY_LIST,
   InvalidOptionError,
-  isPackageError,
-  RetryExhaustedError,
-  withRetry,
-} from "npm-package-boilerplate";
+  isDomlocError,
+  presets,
+  xpathOf,
+} from "@dipanshuhandoo/domloc";
+import { JSDOM } from "jsdom";
 
-console.log("1. Success after transient failures, with a logging hook");
-const retries = [];
-let calls = 0;
-const value = await withRetry(
-  () => {
-    if (++calls < 3) throw new Error(`flaky #${calls}`);
-    return calls;
-  },
-  {
-    minDelayMs: 1,
-    maxDelayMs: 4,
-    onRetry: ({ attempt, delayMs }) => retries.push([attempt, delayMs]),
-  },
-);
-assert.equal(value, 3);
-assert.equal(retries.length, 2);
+const { document } = new JSDOM(`<body>
+  <div id="app">
+    <ul class="menu is-open"><li class="active">Home</li><li>About</li></ul>
+    <div class="con-block marquee"><button data-testid="cta">Buy</button><button>More</button></div>
+    <div id=":r1:"><span>react useId</span></div>
+    <div class="css-1x2y3z"><em>emotion</em></div>
+  </div>
+</body>`).window;
+const $ = (selector) => document.querySelector(selector);
 
-console.log("2. Exhaustion exposes attempts and the last error as the cause");
-await assert.rejects(
-  withRetry(
-    () => {
-      throw new Error("always");
-    },
-    { retries: 2, minDelayMs: 1, maxDelayMs: 2 },
-  ),
-  (error) => {
-    assert.ok(error instanceof RetryExhaustedError);
-    assert.equal(error.attempts, 3);
-    assert.equal(error.cause.message, "always");
-    return true;
-  },
-);
+// 1. One context per document. It memoises sibling groups, ancestor prefixes and id counts.
+const ctx = createSelectorContext();
+assert.equal(ctx.cssSelectorOf($(".menu")), "#app > ul.menu");
+// Runtime state classes (active, is-*, ...) are skipped; position is used instead.
+assert.equal(ctx.cssSelectorOf($(".active")), "#app > ul.menu > li:nth-of-type(1)");
+// Generated ids (React useId) and CSS-in-JS classes never anchor a selector.
+assert.equal(ctx.cssSelectorOf($("span")), "#app > div:nth-of-type(2) > span");
+assert.equal(ctx.cssSelectorOf($("em")), "#app > div:nth-of-type(3) > em");
+// XPath is absolute and positional; omitFirstIndex drops every [1].
+assert.equal(ctx.xpathOf($("em")), "/html/body[1]/div[1]/div[3]/em[1]");
+assert.equal(ctx.xpathOf($("em"), { omitFirstIndex: true }), "/html/body/div/div[3]/em");
 
-console.log("3. Non-retryable errors are rethrown unchanged");
-const fatal = new Error("bad request");
-await assert.rejects(
-  withRetry(
-    () => {
-      throw fatal;
-    },
-    { shouldRetry: () => false },
-  ),
-  (error) => error === fatal,
-);
+// 2. Stable test attributes, opt in. Checked before ids, value must be unique in the document.
+const testIds = createSelectorContext({ attributes: ["data-testid"] });
+assert.equal(testIds.cssSelectorOf($("button")), '[data-testid="cta"]');
 
-console.log("4. Cancellation during backoff");
-const controller = new AbortController();
-const pending = withRetry(
-  () => {
-    throw new Error("slow failure");
-  },
-  { minDelayMs: 60_000, maxDelayMs: 60_000, jitter: false, signal: controller.signal },
-);
-setTimeout(() => controller.abort(), 10);
-await assert.rejects(pending, AbortedError);
+// 3. Deny lists: extend the defaults, replace them, or use a platform preset.
+const custom = createSelectorContext({ classDenyList: [...DEFAULT_CLASS_DENY_LIST, /^menu$/] });
+assert.equal(custom.cssSelectorOf($(".menu")), "#app > ul");
+const milo = createSelectorContext(presets.milo);
+assert.equal(milo.cssSelectorOf($(".marquee")), "#app > div:nth-of-type(1)");
+assert.equal(ctx.cssSelectorOf($(".marquee")), "#app > div.con-block");
 
-console.log("5. Invalid options fail fast with a typed error");
-await assert.rejects(
-  withRetry(() => 1, { retries: -1 }),
-  (error) => {
-    assert.ok(error instanceof InvalidOptionError);
-    assert.ok(isPackageError(error));
-    assert.equal(error.code, "ERR_INVALID_OPTION");
-    return true;
-  },
-);
+// 4. One-off helpers build a throwaway context: fine for a few calls, slower in loops.
+assert.equal(cssSelectorOf($("em")), ctx.cssSelectorOf($("em")));
+assert.equal(xpathOf($("em"), { omitFirstIndex: true }), "/html/body/div/div[3]/em");
+assert.equal(cssEscape("we:ird.id"), "we\\:ird\\.id");
 
-console.log("Full tour complete");
+// 5. Errors are typed, with a stable code.
+try {
+  createSelectorContext({ adapter: "cheerio" });
+  assert.fail("expected an error");
+} catch (error) {
+  assert.ok(error instanceof InvalidOptionError && isDomlocError(error));
+  assert.equal(error.code, "ERR_INVALID_OPTION");
+}
+
+// 6. CommonJS consumers get the same API.
+const cjs = createRequire(import.meta.url)("@dipanshuhandoo/domloc");
+assert.equal(cjs.createSelectorContext().cssSelectorOf($(".menu")), "#app > ul.menu");
+console.log("full tour ok");

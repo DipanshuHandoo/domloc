@@ -63,7 +63,13 @@ Prereleases: `npx changeset pre enter next` ... `npx changeset pre exit`.
 - Node support: edit `engines.node`, `.nvmrc`, the matrix in `ci.yml` and `nodeTarget` in
   `boilerplate.config.json` together.
 - Size budget and coverage thresholds live in `boilerplate.config.json`; raising limits needs
-  a deliberate review.
+  a deliberate review. Current budget (110 kB packed / 440 kB unpacked) covers source maps for six
+  bundles (~60% of the size, each embedding the full TypeScript source) and the ~8 kB browser
+  script embedded in four ESM/CJS bundles. Each map is larger than gzip's 32 kB window, so the
+  duplicated sources compress poorly and packed size grows faster than unpacked size.
+- Example-only dependencies (`jsdom`, `cheerio`, `playwright`) are listed in
+  `exampleDependencies` and must also be in `devDependencies`; `test:package` installs them next
+  to the tarball.
 - Action versions are pinned to commit SHAs; Dependabot proposes updates.
 - Adding a subpath export: add an entry under `entries` in `boilerplate.config.json`, an
   `exports` branch (with `types` before `default`) in `package.json`, and a test. `npm run
