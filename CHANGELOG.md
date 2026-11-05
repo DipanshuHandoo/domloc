@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.1
+
+### Patch Changes
+
+- 1509cff: setting github actions
+- 4abfe71: version fix
+
 ## 2.0.0
 
 ### Major Changes
