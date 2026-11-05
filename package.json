@@ -1,6 +1,6 @@
 {
   "name": "@dipanshuhandoo/domloc",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Readable, unique CSS selectors and absolute XPaths for browser DOM, jsdom and Cheerio (domhandler) nodes. One algorithm, zero dependencies.",
   "keywords": [
     "css-selector",

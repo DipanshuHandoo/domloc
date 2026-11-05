@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.2
+
+### Patch Changes
+
+- f057bb5: Local Release
+
 ## 2.0.1
 
 ### Patch Changes
