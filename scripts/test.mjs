@@ -16,4 +16,6 @@ if (coverage) {
 }
 args.push(`test/**/*.test.${ext}`);
 
-runNode(args).catch((error) => fail(error));
+const env = coverage ? { ...process.env, DOMLOC_COVERAGE: "1" } : process.env;
+
+runNode(args, { env }).catch((error) => fail(error));
