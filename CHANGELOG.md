@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.4
+
+### Patch Changes
+
+- 9924687: Release script fix
+
 ## 2.0.3
 
 ### Patch Changes
