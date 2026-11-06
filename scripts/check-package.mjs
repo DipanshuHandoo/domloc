@@ -16,6 +16,7 @@ import {
   fail,
   log,
   readConfig,
+  readJson,
   readPackage,
   root,
   runBin,
@@ -196,11 +197,19 @@ async function main() {
 
     log("Installing tarball (and example-only dependencies) into an isolated consumer");
     const devDependencies = pkg.devDependencies ?? {};
+    const lock = readJson(path.join(root, "package-lock.json"));
     const exampleDependencies = (config.exampleDependencies ?? []).map((name) => {
       if (!devDependencies[name]) {
         throw new Error(`exampleDependencies: "${name}" must be listed in devDependencies`);
       }
-      return `${name}@${devDependencies[name]}`;
+      // Pin to the exact version already resolved in package-lock.json, not the devDependencies
+      // semver range: re-resolving a range against the live registry is non-reproducible and can
+      // break on a transient upstream publish lag between a package and one of its dependencies.
+      const locked = lock.packages?.[`node_modules/${name}`]?.version;
+      if (!locked) {
+        throw new Error(`exampleDependencies: "${name}" is not resolved in package-lock.json`);
+      }
+      return `${name}@${locked}`;
     });
     await runNpm(
       ["install", "--no-audit", "--no-fund", "--ignore-scripts", tarball, ...exampleDependencies],
